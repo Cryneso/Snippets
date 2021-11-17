@@ -4,14 +4,46 @@
 <div class="row">
     <div class="col">
         <p>На данной страницы будут отображаться все созданные сниппеты.</p>
-        <p>Пока тут пусто, скоро мы это исправим!</p>
         <hr>
     </div>
 </div>
-
+<div class="font-weight-bold mb-1">
+    Список сниппетов:
+</div>
 <div class="row">
-    <div class="col-4 offset-2">
-        Список сниппетов:
+
+    <div class="col">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Название</th>
+                <th scope="col">Дата создания</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for snippet in snippets %}
+            <tr>
+                <td scope="row">{{ snippet.id }}</td>
+                <td><a href="{% url 'get_snippet' id=snippet.id %}">{{ snippet.name }}</a></td>
+                <td>{{ snippet.created_at|date:'d.m.Y' }}</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col">
+                <div align="left">
+                    <i style="color: gray;">Всего сниппетов: 2</i>
+                </div>
+            </div>
+        </div>
+        <br>
+
     </div>
+
+
 </div>
 {% endblock %}
