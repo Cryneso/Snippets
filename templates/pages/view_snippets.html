@@ -11,7 +11,6 @@
     Список сниппетов:
 </div>
 <div class="row">
-
     <div class="col">
         <table class="table table-striped">
             <thead class="thead-dark">
@@ -21,8 +20,8 @@
                 <th scope="col">Дата создания</th>
             </tr>
             </thead>
-            <tbody>
 
+            <tbody>
             {% for snippet in snippets %}
             <tr>
                 <td scope="row">{{ snippet.id }}</td>
@@ -30,8 +29,8 @@
                 <td>{{ snippet.created_at|date:'d.m.Y' }}</td>
             </tr>
             {% endfor %}
-
             </tbody>
+
         </table>
         <div class="row">
             <div class="col">
@@ -41,9 +40,6 @@
             </div>
         </div>
         <br>
-
     </div>
-
-
 </div>
 {% endblock %}
