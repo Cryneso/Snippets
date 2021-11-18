@@ -1,23 +1,64 @@
 {% extends 'pages/base.html' %}
 {% block content %}
+{% if edit_mode %}
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col">
+            <div class="col mb-3">
+                Название: <input name="name" type="text" value="{{ snippet.name }}" class="form-control">
+            </div>
+            <div class="col mb-3">
+                Язык: <input name="lang" type="text" value="{{ snippet.lang }}" class="form-control">
+            </div>
+            <div class="col">
+                Код: <textarea id="code" name="code" rows="10" class="form-control">{{ snippet.code }}</textarea>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="col mb-3">
+                Дата создания:<input type="text" value="{{ snippet.created_at|date:'d.m.Y H:i' }}" class="form-control"
+                                     readonly/>
+            </div>
+            <div class="col mb-3">
+                Дата последнего изменения:<input type="text" value="{{ snippet.updated_at|date:'d.m.Y H:i' }}"
+                                           class="form-control" readonly/>
+            </div>
+        </div>
+
+    </div>
+    <hr>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <input type="submit" class="btn btn-primary btn-block" value="Сохранить изменения">
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>
+{% else %}
 <fieldset disabled>
-    <div class="row disabled">
-        <div class="col col-8">
+    <div class="row ">
+        <div class="col-3">
             Название: <input type="text" value="{{ snippet.name }}" class="form-control">
         </div>
-        <div class="col col-4">
-            Дата создания:<input type="text" value="{{ snippet.created_at|date:'d.m.Y' }}" class="form-control">
+        <div class="col-3">
+            Язык: <input type="text" value="{{ snippet.lang }}" class="form-control">
+        </div>
+        <div class="col-3">
+            Дата создания:<input type="text" value="{{ snippet.created_at|date:'d.m.Y H:i' }}" class="form-control">
+        </div>
+        <div class="col-3">
+            Дата последнего изменения:<input type="text" value="{{ snippet.updated_at|date:'d.m.Y H:i' }}"
+                                       class="form-control">
         </div>
     </div>
     <hr>
     <div class="row">
         <div class="col">
-            <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
-                <p>
-                    {{ snippet.code }}
-                </p>
-            </div>
+            Код: <textarea id="code" name="code" rows="10" class="form-control">{{ snippet.code }}</textarea>
         </div>
     </div>
 </fieldset>
+{% endif %}
 {% endblock %}
