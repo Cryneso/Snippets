@@ -5,11 +5,26 @@
     <div class="col">
         <form action="" method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-group row">
-                <div class="col-8">
-                    <input type="submit" class="btn btn-primary btn-block" value="Сохранить">
+            <div class="row">
+                <div class="col">
+                    <div class="col mb-3">
+                        Название: {{form.name}}
+                    </div>
+                    <div class="col mb-3">
+                        Язык: {{form.lang}}
+                    </div>
+                    <div class="col">
+                        Код: {{form.code}}
+                    </div>
                 </div>
+            </div>
+            <hr>
+            <div class="form-group row">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <input type="submit" class="btn btn-primary btn-block" value="Сохранить изменения">
+                </div>
+                <div class="col-4"></div>
             </div>
         </form>
     </div>

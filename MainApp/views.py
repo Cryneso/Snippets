@@ -18,6 +18,7 @@ def add_snippet_page(request):
             'form': form
         }
         return render(request, 'pages/add_snippet.html', context)
+    
     if request.method == "POST":
         form = SnippetForm(request.POST)
         if form.is_valid():
@@ -61,7 +62,8 @@ def snippets_page(request):
     snippets = Snippet.objects.all()
     context = {
         'pagename': 'Просмотр сниппетов',
-        "snippets": snippets
+        "snippets": snippets,
+        'snippets_count': snippets.count()
     }
     return render(request, 'pages/view_snippets.html', context)
 
