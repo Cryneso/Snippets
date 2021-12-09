@@ -29,17 +29,29 @@
               >Добавить сниппет</a
             >
           </li>
-          <li class="form-inline">
+          <li class="form-inline mr-3">
             <a class="btn btn-outline-info" href="{% url 'list_snippet' %}"
               >Посмотреть сниппеты</a
             >
           </li>
+          {% if request.user.is_authenticated %}
+          <li class="form-inline">
+            <a class="btn btn-outline-success" href="{% url 'my_list_snippet' %}"
+              >Мои сниппеты</a
+            >
+          </li>
+          {% endif %}
         </ul>
       </div>
       {% if request.user.is_authenticated %}
       <div class='text-white'>Добро пожаловать, {{request.user.username }}!</div>
       <div class='ml-3'><a href='{% url 'logout' %}'> Выход</a></div>
       {% else %}
+      <li class="form-inline mr-3">
+        <a class="btn btn-outline-success" href="{% url 'register' %}"
+          >Регистрация</a
+        >
+      </li>
       <div class="navbar-nav mr-right nav-item dropdown dropdown-menu-right">
         <a class="btn btn-outline-primary my-2 my-sm-0 dropdown-toggle" href="#" id="navbarDropdown"
            role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Авторизация</a>
@@ -57,6 +69,14 @@
             <div class="dropdown-divider"></div>
         </div>
      </div>
+      {% if errors %}
+      <ul>
+        {% for error in errors %}
+          <li class='text-text-warning'> {{ error }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
       {% endif %}
     </div>
   </nav>

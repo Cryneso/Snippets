@@ -18,9 +18,12 @@
                 <th scope="col">ID</th>
                 <th scope="col">Название</th>
                 <th scope="col">Пользователь</th>
+                <th scope="col">Доступ</th>
                 <th scope="col">Дата создания</th>
-                <th scope="col">Редактирование</th>
-                <th scope="col">Удаление</th>
+ 
+                    <th scope="col">Управление</th>
+
+
             </tr>
             </thead>
 
@@ -30,9 +33,20 @@
                 <td scope="row">{{ snippet.id }}</td>
                 <td><a href="{% url 'get_snippet' id=snippet.id %}">{{ snippet.name }}</a></td>
                 <td>{{ snippet.user.username }}</td>
+                <td>
+                    {% if snippet.public %}
+                        Публичный
+                    {% else %}
+                        Приватный
+                    {% endif %}
+                </td>
                 <td>{{ snippet.created_at|date:'d.m.Y H:i' }}</td>
-                <td><a href="{% url 'edit_snippet' id=snippet.id %}">Редактировать</a></td>
-                <td><a href="{% url 'delete_snippet' id=snippet.id %}">Удалить</a></td>
+
+                    <td>
+                        <a href="{% url 'edit_snippet' id=snippet.id %}">Редактировать</a>
+                        <a href="{% url 'delete_snippet' id=snippet.id %}">Удалить</a>
+                    </td>
+   
             </tr>
             {% endfor %}
             </tbody>

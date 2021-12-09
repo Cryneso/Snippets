@@ -1,8 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import render, redirect
 from MainApp.models import Snippet
-from MainApp.forms import SnippetForm
+from MainApp.forms import SnippetForm, UserRegistrationForm
 from django.contrib import auth
 
 
@@ -22,13 +22,37 @@ def login_page(request):
            auth.login(request, user)
        else:
            # Return error message
-           pass
+           context = {
+               'pagename': 'Главная',
+               'errors': ['Неверный логин или пароль']
+           }
+           return render(request, 'pages/index.html', context)
    return redirect('home')
+
 
 def logout(request):
     auth.logout(request)
     return redirect('home')
 
+
+def register(request):
+    if request.method == 'GET':
+        form = UserRegistrationForm()
+        context = {
+            'pagename': 'Регистрация нового пользователя',
+            'form': form
+        }
+        return render(request, 'pages/register.html', context)
+    else:  # POST
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        context = {
+            'pagename': 'Регистрация нового пользователя',
+            'form': form
+        }
+        return render(request, 'pages/register.html', context)
 
 
 def add_snippet_page(request):
@@ -54,7 +78,10 @@ def add_snippet_page(request):
 def delete_snippet(request, id):
     try:
         snippet = Snippet.objects.get(id=id)
-        snippet.delete()
+        if snippet.user == request.user:
+            snippet.delete()
+        else:
+            raise HttpResponseForbidden
 
         return redirect("list_snippet")
     except ObjectDoesNotExist:
@@ -69,8 +96,13 @@ def edit_snippet(request, id):
             snippet.name = data["name"]
             snippet.lang = data["lang"]
             snippet.code = data["code"]
+            snippet.public = request.POST.get('public', False)
             snippet.save()
-            return redirect("list_snippet")
+            try:
+                if snippet.user.id == request.user.id:
+                    return redirect("my_list_snippet")
+            except:
+                return redirect("list_snippet")
 
         context = {
             'pagename': 'Редактирование сниппета',
@@ -83,13 +115,26 @@ def edit_snippet(request, id):
 
 
 def snippets_page(request):
-    snippets = Snippet.objects.all()
+    snippets = Snippet.objects.filter(public=1)
     context = {
         'pagename': 'Просмотр сниппетов',
         "snippets": snippets,
         'snippets_count': snippets.count()
     }
     return render(request, 'pages/view_snippets.html', context)
+
+
+def my_snippets_page(request):
+    if request.user.is_authenticated:
+        snippets = Snippet.objects.filter(user_id=request.user.id)
+        context = {
+            'pagename': 'Просмотр моих сниппетов',
+            "snippets": snippets,
+            'snippets_count': snippets.count()
+        }
+        return render(request, 'pages/view_snippets.html', context)
+    raise Http404
+    
 
 
 def get_snippet(request, id):
