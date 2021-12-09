@@ -1,8 +1,10 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseForbidden
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from MainApp.models import Snippet
-from MainApp.forms import SnippetForm, UserRegistrationForm
+from MainApp.models import Comment, Snippet
+from MainApp.forms import CommentForm, SnippetForm, UserRegistrationForm
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 
@@ -56,6 +58,50 @@ def register(request):
         return render(request, 'pages/register.html', context)
 
 
+@login_required
+def comment_add(request):
+    try:
+        if request.method == "POST":
+            comment_form = CommentForm(request.POST)
+            snippet_id = request.POST.get('snippet_id', 0)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.author = request.user
+                comment.snippet = Snippet.objects.get(id=snippet_id)
+                comment.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    
+@login_required
+def comment_edit(request, id):
+    try:
+        comment = Comment.objects.get(id=id)
+        data = request.POST
+        comment.text = data["text"]
+        if comment.author == request.user:
+            comment.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            return HttpResponseForbidden()
+    except ObjectDoesNotExist:
+        return Http404
+    
+@login_required
+def comment_delete(request, id):
+    try:
+        comment = Comment.objects.get(id=id)
+        if request.user.id == 1:
+            comment.delete()
+        else:
+            return HttpResponseForbidden()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    except ObjectDoesNotExist:
+        raise Http404
+    
+
+@login_required
 def add_snippet_page(request):
     if request.method == "GET":
         form = SnippetForm()
@@ -94,8 +140,10 @@ def delete_snippet(request, id):
 def edit_snippet(request, id):
     try:
         snippet = Snippet.objects.get(id=id)
+        comments = Comment.objects.filter(snippet=id)
         if request.method == "POST":
             data = request.POST
+            snippet.id = id
             snippet.name = data["name"]
             snippet.lang = data["lang"]
             snippet.code = data["code"]
@@ -114,13 +162,29 @@ def edit_snippet(request, id):
         context = {
             'pagename': 'Редактирование сниппета',
             'snippet': snippet,
-            'edit_mode': True
+            'comments': comments,
+            'edit_mode': True,
+            'comment_form': CommentForm()
         }
         return render(request, 'pages/snippet.html', context)
     except ObjectDoesNotExist:
         return Http404
 
 
+def get_snippet(request, id):
+    try:
+        snippet = Snippet.objects.get(id=id)
+        comments = Comment.objects.filter(snippet=id)
+        context = {
+            'pagename': 'Просмотр сниппета',
+            'snippet': snippet,
+            'comments': comments,
+        }
+        return render(request, 'pages/snippet.html', context)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    
 def snippets_page(request):
     snippets = Snippet.objects.filter(public=1)
     context = {
@@ -141,16 +205,3 @@ def my_snippets_page(request):
         }
         return render(request, 'pages/view_snippets.html', context)
     raise Http404
-    
-
-
-def get_snippet(request, id):
-    try:
-        snippet = Snippet.objects.get(id=id)
-        context = {
-            'pagename': 'Просмотр сниппета',
-            'snippet': snippet
-        }
-        return render(request, 'pages/snippet.html', context)
-    except ObjectDoesNotExist:
-        raise Http404

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, Textarea, CharField, PasswordInput, ValidationError
 from django.forms.widgets import CheckboxInput, Select
-from MainApp.models import Snippet
+from MainApp.models import Comment, Snippet
 
 LANGS = (
     ('python', 'Python'),
@@ -29,6 +29,20 @@ class SnippetForm(ModelForm):
             'code': 'Код',
             'public': 'Публичный сниппет',
         }
+        
+class CommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+       
+    widgets = {
+            'text': Textarea(attrs={"class": "form-control form-control-lg"}),
+        }  
+    
+    labels = {
+            'text': '',
+        } 
+       
 
 class UserRegistrationForm(ModelForm):
     class Meta:
