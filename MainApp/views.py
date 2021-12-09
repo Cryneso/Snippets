@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from MainApp.models import Snippet
 from MainApp.forms import SnippetForm, UserRegistrationForm
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 
 def index_page(request):
@@ -75,19 +76,21 @@ def add_snippet_page(request):
         return render(request, 'add_snippet.html', {'form': form})
 
 
+@login_required
 def delete_snippet(request, id):
     try:
         snippet = Snippet.objects.get(id=id)
         if snippet.user == request.user:
             snippet.delete()
         else:
-            raise HttpResponseForbidden
+            return HttpResponseForbidden()
 
         return redirect("list_snippet")
     except ObjectDoesNotExist:
         raise Http404
 
 
+@login_required
 def edit_snippet(request, id):
     try:
         snippet = Snippet.objects.get(id=id)
@@ -97,7 +100,11 @@ def edit_snippet(request, id):
             snippet.lang = data["lang"]
             snippet.code = data["code"]
             snippet.public = request.POST.get('public', False)
-            snippet.save()
+            if snippet.user == request.user:
+                snippet.save()
+            else:
+                return HttpResponseForbidden()
+            
             try:
                 if snippet.user.id == request.user.id:
                     return redirect("my_list_snippet")
@@ -111,7 +118,7 @@ def edit_snippet(request, id):
         }
         return render(request, 'pages/snippet.html', context)
     except ObjectDoesNotExist:
-        raise Http404
+        return Http404
 
 
 def snippets_page(request):
