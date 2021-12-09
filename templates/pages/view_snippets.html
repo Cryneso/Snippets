@@ -43,8 +43,8 @@
                 <td>{{ snippet.created_at|date:'d.m.Y H:i' }}</td>
 
                     <td>
-                        <a href="{% url 'edit_snippet' id=snippet.id %}">Редактировать</a>
-                        <a href="{% url 'delete_snippet' id=snippet.id %}">Удалить</a>
+                        <a href="{% url 'edit_snippet' id=snippet.id %}"><span class="material-icons" style="font-size: 22px;">edit</span></a>
+                        <a href="{% url 'delete_snippet' id=snippet.id %}"><span class="material-icons" style="font-size: 22px;">delete</span></a>
                     </td>
    
             </tr>
