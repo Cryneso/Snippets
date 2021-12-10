@@ -179,6 +179,7 @@ def get_snippet(request, id):
             'pagename': 'Просмотр сниппета',
             'snippet': snippet,
             'comments': comments,
+            'comment_form': CommentForm()
         }
         return render(request, 'pages/snippet.html', context)
     except ObjectDoesNotExist:
