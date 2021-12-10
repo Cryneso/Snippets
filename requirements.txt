@@ -4,4 +4,4 @@ ipython
 gunicorn
 django-heroku
 psycopg2-binary
-j-database-url
+dj-database-url
